@@ -1,0 +1,157 @@
+from PIL import Image
+import math
+import numpy
+#import plotly.plotly as py
+#import plotly.graph_objs as go
+import os
+import xml.etree.ElementTree
+import plotly
+#from plotly.offline import init_notebook_mode
+import plotly.graph_objs as go
+plotly.offline.init_notebook_mode(connected=True)
+
+def rot(img, rot):
+    img = makeSquare(img)
+    return img.rotate(rot)
+
+
+def makeSquare(img):
+    x = img.size[0]
+    y = img.size[1]
+    if(x > y):
+        dim = (int(x*math.sqrt(2)),int(x*math.sqrt(2)))
+        sizevar = "x"
+    else:
+        dim = (int(y*math.sqrt(2)),int(y*math.sqrt(2)))
+        sizevar = "y"
+    blank = Image.new('RGB',dim,0)
+    if(sizevar == "x"):
+        blank.paste(img,(int((dim[0]-x)/2),int((dim[0]-y)/2)))
+    else:
+        blank.paste(img,(int((dim[0]-x)/2),int((dim[0]-y)/2)))
+    return blank
+
+
+def shift(topp, downp, leftp, rightp, img):
+    x = img.size[0] + leftp + rightp
+    y = img.size[1] + topp + downp
+    dim = (x,y)
+    blank = Image.new('RGB',dim,0)
+    blank.paste(img,(leftp,topp))
+    return blank
+
+
+def changeSize(img, x, y):
+    sz = (x, y)
+    imgn = img.resize([x,y])
+    return imgn
+
+
+def changeBack(img, imgb, sizex, sizey, locx, locy):
+    img = changeSize(img, sizex, sizey)
+    imgb.paste(img, (locx, locy))
+    return imgb
+
+
+# img the picture you want to alter
+# objloc the top left location of the object of interest in tuple form
+# objsize the size of the object of interest in tuple form
+def center(img, objloc, objsize):
+    # getting bottom right location
+    objarea = (objloc[0], objloc[1], objloc[0] + objsize[0], objloc[1] + objsize[1])
+    # assigning the picture of the object of interest to var obj
+    obj = img.crop(objarea)
+    # assigning the center of the image to centerloc
+    centerloc = (int(img.size[0] / 2), int(img.size[1] / 2))
+    # changing centerloc to the top left of the place the center should be for the object of interest
+    centerloc = (centerloc[0] - int(objsize[0] / 2), centerloc[1] - int(objsize[1] / 2))
+    # getting the picture that is currently in the center
+    centerobj = img.crop((centerloc[0], centerloc[1], centerloc[0] + objsize[0], centerloc[1] + objsize[1]))
+    # pasting the center peice where the object used to be
+    img.paste(centerobj, objloc)
+    # pasting the object in the center
+    img.paste(obj, centerloc)
+    return img
+
+# imgs is array of the images
+# onjlocs is array of tuples containing locations of objects (x,y)
+# objsize is an array of tuples containing the sizes of the objects(x,y)
+# res is resolution you want of the heatmap
+
+
+def heatmap(imgs,objlocs,objsize, res):
+    map = numpy.zeros((res[0], res[1]))
+    for q in range(len(imgs)):
+        img = imgs[q]
+        if img[0] != 0 and img[1] != 0 and objsize[q][0] != 0 and objsize[q][1] != 0:
+            imx = img[0]
+            imy = img[1]
+            xp = objlocs[q][0]/imx
+            yp = objlocs[q][1]/imy
+            xps = (objlocs[q][0] + objsize[q][0])/imx
+            yps = (objlocs[q][1] + objsize[q][1])/imy
+            nxp = res[0] * xp
+            nyp = res[1] * yp
+            nxps = res[0] * xps
+            nyps = res[1] * yps
+            for i in range(int(nxp), int(nxps)):
+                for z in range(int(nyp), int(nyps)):
+                    map[i][z] += 1
+    #print(map)
+    plotly.offline.plot([go.Heatmap(z=map)], filename='basic-heatmap.html')
+    percents = map
+    for m in range(res[0]):
+        for n in range(res[1]):
+            percents[m][n] = percents[m][n] / len(imgs)
+    plotly.offline.plot([go.Heatmap(z=percents)], filename='basic-percentheatmap.html')
+
+
+def getinfo(folder):
+    bndtop = []
+    bndsize = []
+    picsize = []
+    for file in os.listdir(folder):
+        if file.endswith(".xml"):
+            parse = xml.etree.ElementTree.parse(folder + "\\" + file).getroot()
+            width = 0
+            height = 0
+            xmin = 0
+            ymin = 0
+            xmax = 0
+            xmin = 0
+            for child in parse:
+                if child.tag == "object":
+                    for child1 in child:
+                        if child1.tag == "bndbox":
+                            for child2 in child1:
+                                if child2.tag == "xmin":
+                                    xmin = float(child2.text)
+                                if child2.tag == "ymin":
+                                    ymin = float(child2.text)
+                                if child2.tag == "xmax":
+                                    xmax = float(child2.text)
+                                if child2.tag == "ymax":
+                                    ymax = float(child2.text)
+                if child.tag == "size":
+                    for child2 in child:
+                        if child2.tag == "width":
+                            width = float(child2.text)
+                        if child2.tag == "height":
+                            height = float(child2.text)
+            bndtop.append((xmin,ymin))
+            bndsize.append((xmax-xmin, ymax-ymin))
+            picsize.append((width, height))
+    return picsize, bndtop, bndsize
+
+
+
+
+def main():
+    Inetfolder = r"C:\Users\abala\Downloads\Annotation.tar\Annotation\Annotation\n00007846"
+    Inet = getinfo(Inetfolder)
+    heatmap(Inet[0],Inet[1],Inet[2],(500,200))
+
+
+
+if __name__ == "__main__":
+    main()

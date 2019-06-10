@@ -17,6 +17,7 @@ import os
 import glob
 import time
 import math
+import subprocess
 #from datasets.ds_utils import cropImageToAnnoRegion,addRoidbField,clean_box,scaleRawImage
 from random import shuffle
 from sklearn.ensemble import BaggingClassifier

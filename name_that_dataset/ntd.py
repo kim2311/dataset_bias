@@ -269,7 +269,7 @@ def extract_features(imgs, feat_type, spatial_size=(32, 32),
 # LOAD IN DATA for Helps computer
 #print('===== STARTING =====')
 
-train_cam = '/local/b/cam2/data/cam2-24hr-labeled/JPG-labeled/'
+train_cam = '/local/b/cam2/data/cam2-24hr-labeled/'
 train_COCO = '/local/b/cam2/data/coco/images/train2014'
 train_INRIA = '/local/b/cam2/data/INRIAPerson/Train'
 train_caltech0 = '/local/b/cam2/data/caltech_pedestrian/extracted_data/set00/'
@@ -287,6 +287,10 @@ train_ImageNet = '/local/b/cam2/data/ILSVRC2012_Classification/train/'
 train_Pascal = '/local/b/cam2/data/VOCdevkit/VOC2012/JPEGImages/'
 train_Sun = '/local/b/cam2/data/SUN2012/Images/'
 train_kitti = '/local/b/cam2/data/kitti/KITTIdevkit/KITTI2013/image_2/'
+train_usps = '/local/b/cam2/data/usps/'
+train_mnist = '/local/b/cam2/data/mnist/trainingSample/'
+train_mnistm = '/local/b/cam2/data/mnist_m/mnist_m_train/'
+train_svhn = '/local/b/cam2/data/svhn/train/'
 
 #for helps computer
 caltech_train = (glob.glob(train_caltech0 + '/**/*.jpg', recursive = True)) + (glob.glob(train_caltech1 + '/**/*.jpg', recursive = True))+ (glob.glob(train_caltech2 + '/**/*.jpg', recursive = True))+ (glob.glob(train_caltech3 + '/**/*.jpg', recursive = True))+ (glob.glob(train_caltech4 + '/**/*.jpg', recursive = True))+ (glob.glob(train_caltech5 + '/**/*.jpg', recursive = True))#+ (glob.glob(train_caltech + '/**/*.bmp', recursive = True))
@@ -298,6 +302,10 @@ cam2 = glob.glob(train_cam + '/**/*.jpg', recursive = True)
 inria = glob.glob(train_INRIA + '/**/*.png', recursive = True) + (glob.glob(train_INRIA + '/**/*.jpg', recursive = True))
 sun = glob.glob(train_Sun + '/**/*.jpg', recursive = True)
 kitti = glob.glob(train_kitti + '/**/*.png', recursive = True)
+usps = glob.glob(train_usps + '/**/*.png', recursive = True) + (glob.glob(train_usps + '/**/*.jpg', recursive = True))
+mnist = glob.glob(train_mnist + '/**/*.png', recursive = True) + (glob.glob(train_mnist + '/**/*.jpg', recursive = True))
+mnistm = glob.glob(train_mnistm + '/**/*.png', recursive = True) + (glob.glob(train_mnistm + '/**/*.jpg', recursive = True))
+svhn = glob.glob(train_svhn + '/**/*.png', recursive = True) + (glob.glob(train_svhn + '/**/*.jpg', recursive = True))
 model = ['hog']
 results = []
 
@@ -313,7 +321,11 @@ for j in model:
     shuffle(inria)
     shuffle(sun)
     shuffle(kitti)
-    """
+    shuffle(usps)
+    shuffle(mnist)
+    shuffle(mnistm)
+    shuffle(svhn)
+    
     print('len of coco', len(coco))
     print('len of caltech_test', len(caltech_test))
     print('len of caltech_train', len(caltech_train))
@@ -323,10 +335,15 @@ for j in model:
     print('len of inria', len(inria))
     print('len of sun', len(sun))
     print('len of kitti', len(kitti))
-    """
+    print('len of usps', len(usps))
+    print('len of mnist', len(mnist))
+    print('len of mnistm', len(mnistm))
+    print('len of svhn', len(svhn))
+
+    
     # Specify size of training and testing sets
-    dataset_size_train = 100
-    dataset_size_test = 100
+    dataset_size_train = 250
+    dataset_size_test = 250
     dataset_total = dataset_size_train+dataset_size_test
 
     caltech_train = caltech_train[0:dataset_size_train]
@@ -338,18 +355,25 @@ for j in model:
     inria1 = inria[0:(dataset_size_train+dataset_size_test)]
     sun1 = sun[0:(dataset_size_train+dataset_size_test)]
     kitti1 = kitti[0:(dataset_size_train+dataset_size_test)]
-    """
-    print('===== LENGTH AFTER CUT =====')
+    usps1 = usps[0:(dataset_size_train+dataset_size_test)]
+    mnist1 = mnist[0:(dataset_size_train+dataset_size_test)]
+    mnistm1 = mnistm[0:(dataset_size_train+dataset_size_test)]
+    svhn1 = svhn[0:(dataset_size_train+dataset_size_test)]
+    
     print('len of coco', len(coco1))
-    print('len of caltech_train', len(caltech_train))
     print('len of caltech_test', len(caltech_test))
+    print('len of caltech_train', len(caltech_train))
     print('len of imagenet', len(imagenet1))
     print('len of pascal' ,len(pascal1))
     print('len of cam2', len(cam21))
     print('len of inria', len(inria1))
     print('len of sun', len(sun1))
     print('len of kitti', len(kitti1))
-    """
+    print('len of usps', len(usps1))
+    print('len of mnist', len(mnist1))
+    print('len of mnistm', len(mnistm1))
+    print('len of svhn', len(svhn1))
+ 
     orient = 8  # HOG orientations
     pix_per_cell = 8 # HOG pixels per cell
     cell_per_block = 2 # HOG cells per block
@@ -366,7 +390,12 @@ for j in model:
     inria_feat = extract_features(inria1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
     sun_feat = extract_features(sun1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
     kitti_feat = extract_features(kitti1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
-    """
+    usps_feat = extract_features(usps1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
+    mnist_feat = extract_features(mnist1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
+    mnistm_feat = extract_features(mnistm1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
+    svhn_feat = extract_features(svhn1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
+    
+    '''
     print('===== LENGTH AFTER CUT =====')
     print('len of coco', len(coco1))
     print('len of caltech_train', len(caltech_train))
@@ -377,12 +406,12 @@ for j in model:
     print('len of inria', len(inria1))
     print('len of sun', len(sun1))
     print('len of kitti', len(kitti1))
-    """
+    '''
+
     coco_train = coco_feat[0:dataset_size_train]
     coco_test = coco_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
     caltech_train = caltech_train_feat
     caltech_test = caltech_test_feat
-
     imagenet_train = imagenet_feat[0:dataset_size_train]
     imagenet_test = imagenet_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
     pascal_train = pascal_feat[0:dataset_size_train]
@@ -395,6 +424,15 @@ for j in model:
     sun_test = sun_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
     kitti_train = kitti_feat[0:dataset_size_train]
     kitti_test = kitti_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+    usps_train = usps_feat[0:dataset_size_train]
+    usps_test = usps_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+    mnist_train = mnist_feat[0:dataset_size_train]
+    mnist_test = mnist_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+    mnistm_train = mnistm_feat[0:dataset_size_train]
+    mnistm_test = mnistm_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+    svhn_train = svhn_feat[0:dataset_size_train]
+    svhn_test = svhn_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+
     """
     print('===== LENGTH AFTER FEATURE EXTRACTION AND CUT =====')
     print('len of coco', len(coco_train), len(coco_test))
@@ -406,15 +444,15 @@ for j in model:
     print('len of sun', len(sun_train), len(sun_test))
     print('len of kitti', len(kitti_train), len(kitti_test))
     """
-    X_train_m = np.vstack((coco_train, caltech_train, imagenet_train, pascal_train, cam2_train, inria_train, sun_train, kitti_train)).astype(np.float64) #, mix_train)).astype(np.float64)
-    X_test_m = np.vstack((coco_test, caltech_test, imagenet_test, pascal_test, cam2_test, inria_test, sun_test, kitti_test)).astype(np.float64) #, mix_test)).astype(np.float64)
+    X_train_m = np.vstack((coco_train, caltech_train, imagenet_train, pascal_train, cam2_train, inria_train, sun_train, kitti_train, usps_train, mnist_train, mnistm_train, svhn_train)).astype(np.float64) #, mix_train)).astype(np.float64)
+    X_test_m = np.vstack((coco_test, caltech_test, imagenet_test, pascal_test, cam2_test, inria_test, sun_test, kitti_test, usps_test, mnist_test, mnistm_test, svhn_test)).astype(np.float64) #, mix_test)).astype(np.float64)
     X_train_scaler = StandardScaler().fit(X_train_m)
     X_test_scaler = StandardScaler().fit(X_test_m)
 
     X_train_scaled = X_train_scaler.transform(X_train_m)
     X_test_scaled = X_test_scaler.transform(X_test_m)
-    y_train = np.hstack((np.ones(len(coco_train)), np.full(len(caltech_train), 2), np.full(len(imagenet_train), 3), np.full(len(pascal_train), 4), np.full(len(cam2_train), 5), np.full(len(inria_train), 6), np.full(len(sun_train), 7), np.full(len(kitti_train), 8))) #, np.full(len(mix_train), 9)))
-    y_test = np.hstack((np.ones(len(coco_test)), np.full(len(caltech_test), 2), np.full(len(imagenet_test), 3), np.full(len(pascal_test), 4), np.full(len(cam2_test), 5), np.full(len(inria_test), 6), np.full(len(sun_test), 7), np.full(len(kitti_test), 8))) #, np.full(len(mix_test), 9)))
+    y_train = np.hstack((np.ones(len(coco_train)), np.full(len(caltech_train), 2), np.full(len(imagenet_train), 3), np.full(len(pascal_train), 4), np.full(len(cam2_train), 5), np.full(len(inria_train), 6), np.full(len(sun_train), 7), np.full(len(kitti_train), 8), np.full(len(usps_train), 9), np.full(len(mnist_train), 10), np.full(len(mnistm_train), 11), np.full(len(svhn_train), 12))) #, np.full(len(mix_train), 9)))
+    y_test = np.hstack((np.ones(len(coco_test)), np.full(len(caltech_test), 2), np.full(len(imagenet_test), 3), np.full(len(pascal_test), 4), np.full(len(cam2_test), 5), np.full(len(inria_test), 6), np.full(len(sun_test), 7), np.full(len(kitti_test), 8), np.full(len(usps_test), 9), np.full(len(mnist_test), 10), np.full(len(mnistm_test), 11), np.full(len(svhn_test), 12))) #, np.full(len(mix_test), 9)))
     """
     print('Using:',orient,'orientations', pix_per_cell, 'pixels per cell and', cell_per_block,'cells per block')
     print('Feature vector length:', len(X_train_scaled[0]))
@@ -443,7 +481,7 @@ for j in model:
         np.set_printoptions(precision=2)
 
         # Plot normalized confusion matrix
-        class_names = ('COCO', 'Caltech', 'ImageNet', 'Pascal', 'Cam2', 'INRIA', 'Sun')
+        class_names = ('COCO', 'Caltech', 'ImageNet', 'Pascal', 'Cam2', 'INRIA', 'Sun', 'KITTI', 'USPS', 'MNIST', 'MNISTM', 'SVHN')
         plt.figure()
         plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix')
 

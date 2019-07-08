@@ -287,7 +287,7 @@ train_ImageNet = '/local/b/cam2/data/ILSVRC2012_Classification/train/'
 train_Pascal = '/local/b/cam2/data/VOCdevkit/VOC2012/JPEGImages/'
 train_Sun = '/local/b/cam2/data/SUN2012/Images/'
 train_kitti = '/local/b/cam2/data/kitti/KITTIdevkit/KITTI2013/image_2/'
-train_usps = '/local/b/cam2/data/usps/'
+train_usps = '/local/b/cam2/data/usps/Numerals/'
 train_mnist = '/local/b/cam2/data/mnist/trainingSample/'
 train_mnistm = '/local/b/cam2/data/mnist_m/mnist_m_train/'
 train_svhn = '/local/b/cam2/data/svhn/train/'
@@ -342,8 +342,8 @@ for j in model:
 
     
     # Specify size of training and testing sets
-    dataset_size_train = 250
-    dataset_size_test = 250
+    dataset_size_train = 125
+    dataset_size_test = 125
     dataset_total = dataset_size_train+dataset_size_test
 
     caltech_train = caltech_train[0:dataset_size_train]

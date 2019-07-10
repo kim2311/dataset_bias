@@ -269,7 +269,7 @@ def extract_features(imgs, feat_type, spatial_size=(32, 32),
 # LOAD IN DATA for Helps computer
 #print('===== STARTING =====')
 
-train_cam = '/local/b/cam2/data/cam2-24hr-labeled/'
+train_cam = '/local/b/cam2/data/cam2_new'
 train_COCO = '/local/b/cam2/data/coco/images/train2014'
 train_INRIA = '/local/b/cam2/data/INRIAPerson/Train'
 train_caltech0 = '/local/b/cam2/data/caltech_pedestrian/extracted_data/set00/'
@@ -288,7 +288,7 @@ train_Pascal = '/local/b/cam2/data/VOCdevkit/VOC2012/JPEGImages/'
 train_Sun = '/local/b/cam2/data/SUN2012/Images/'
 train_kitti = '/local/b/cam2/data/kitti/KITTIdevkit/KITTI2013/image_2/'
 train_usps = '/local/b/cam2/data/usps/Numerals/'
-train_mnist = '/local/b/cam2/data/mnist/trainingSample/'
+train_mnist = '/local/b/cam2/data/mnist_new/mnist_png/training/'
 train_mnistm = '/local/b/cam2/data/mnist_m/mnist_m_train/'
 train_svhn = '/local/b/cam2/data/svhn/train/'
 
@@ -325,7 +325,7 @@ for j in model:
     shuffle(mnist)
     shuffle(mnistm)
     shuffle(svhn)
-    
+    ''' 
     print('len of coco', len(coco))
     print('len of caltech_test', len(caltech_test))
     print('len of caltech_train', len(caltech_train))
@@ -339,11 +339,11 @@ for j in model:
     print('len of mnist', len(mnist))
     print('len of mnistm', len(mnistm))
     print('len of svhn', len(svhn))
-
+    '''
     
     # Specify size of training and testing sets
-    dataset_size_train = 125
-    dataset_size_test = 125
+    dataset_size_train = 500
+    dataset_size_test = 500
     dataset_total = dataset_size_train+dataset_size_test
 
     caltech_train = caltech_train[0:dataset_size_train]
@@ -359,7 +359,7 @@ for j in model:
     mnist1 = mnist[0:(dataset_size_train+dataset_size_test)]
     mnistm1 = mnistm[0:(dataset_size_train+dataset_size_test)]
     svhn1 = svhn[0:(dataset_size_train+dataset_size_test)]
-    
+    '''
     print('len of coco', len(coco1))
     print('len of caltech_test', len(caltech_test))
     print('len of caltech_train', len(caltech_train))
@@ -373,7 +373,7 @@ for j in model:
     print('len of mnist', len(mnist1))
     print('len of mnistm', len(mnistm1))
     print('len of svhn', len(svhn1))
- 
+    '''
     orient = 8  # HOG orientations
     pix_per_cell = 8 # HOG pixels per cell
     cell_per_block = 2 # HOG cells per block

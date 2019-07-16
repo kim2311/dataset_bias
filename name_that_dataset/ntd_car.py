@@ -1,9 +1,5 @@
 """
-Created on Tue Mar 13 21:32:08 2018
-@author: zkapach
-
-Revisions by Fischer Bordwell
-fbordwel@purdue.edu
+authors: zkapach and fbordwel
 """
 
 import matplotlib

@@ -1,10 +1,5 @@
 """
-Created on Tue Mar 13 21:32:08 2018
-@author: zkapach
-
-Revisions by Fischer Bordwell
-fbordwel@purdue.edu
-github.com/fbordwell
+authors: zkapach and fbordwel
 """
 
 import matplotlib
@@ -18,7 +13,6 @@ import glob
 import time
 import math
 import subprocess
-#from datasets.ds_utils import cropImageToAnnoRegion,addRoidbField,clean_box,scaleRawImage
 from random import shuffle
 from sklearn.ensemble import BaggingClassifier
 from sklearn import preprocessing
@@ -32,122 +26,6 @@ import warnings
 import random
 warnings.filterwarnings('ignore')
 
-"""
-def get_roidb(imdb_name):
-    imdb = get_repo_imdb(imdb_name)
-    print 'Loaded dataset `{:s}` for training'.format(imdb.name)
-    imdb.set_proposal_method(cfg.TRAIN.OBJ_DET.PROPOSAL_METHOD)
-    print 'Set proposal method: {:s}'.format(cfg.TRAIN.OBJ_DET.PROPOSAL_METHOD)
-    roidb = get_training_roidb(imdb)
-    return imdb, roidb
-
-def get_bbox_info(roidb,size):
-    areas = np.zeros((size))
-    widths = np.zeros((size))
-    heights = np.zeros((size))
-    actualSize = 0
-    idx = 0
-    for image in roidb:
-        if image['flipped'] is True: continue
-        bbox = image['boxes']
-        for box in bbox:
-            actualSize += 1
-            widths[idx] = box[2] - box[0]
-            heights[idx] = box[3] - box[1]
-            assert widths[idx] >= 0,"widths[{}] = {}".format(idx,widths[idx])
-            assert heights[idx] >= 0
-            areas[idx] = widths[idx] * heights[idx]
-            idx += 1
-    return areas,widths,heights
-"""
-"""
-def bboxHOGfromRoidbSample(sample,orient=9, pix_per_cell=8,
-                       cell_per_block=2, hog_channel=0):
-    features = []
-    if 'image' not in sample.keys():
-        # print(sample)
-        print(sample.keys())
-        print("WARINING [bboxHOGfromRoidbSample]: the\
-        image field is not available for the above sample")
-        return None
-    img = cv2.imread(sample['image'])
-    for box in sample['boxes']:
-        box = clean_box(box,sample['width'],sample['height'])
-        cimg = cropImageToAnnoRegion(img,box)
-        feature_image = np.copy(cimg)      
-        try:
-            features.append(HOGFromImage(feature_image))
-        except Exception as e:
-            print(e)
-            print('hog failed @ path {}'.format(sample['image']))
-            return None
-    return features
-
-def imageHOGfromRoidbSample(sample,orient=9, pix_per_cell=8,
-                       cell_per_block=2, hog_channel=0):
-    if 'image' not in sample.keys():
-        #print(sample)
-        print(sample.keys())
-        print("WARINING [imageHOGfromRoidbSample]: the\
-        image field is not available for the above sample")
-        return None
-    img = cv2.imread(sample['image'])
-    try:
-        # scaleRawImage(img); maybe scale raw images differently in the future
-        feature = HOGFromImage(img)
-    except Exception as e:
-        feature = None
-        print(e)
-        print('[imageHOGfromRoidbSample] hog failed @ path {}'.format(sample['image']))
-    return feature
-
-def HOGFromImage(image,rescale=True,orient=9, pix_per_cell=8,
-                 spatial_size=(128,256), hist_bins=32,
-                 cell_per_block=2):
-    # hist_bins is *not* used
-
-    if len(image.shape) == 3 and image.shape[2] == 3:
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    if rescale: image = cv2.resize(image, spatial_size)
-
-    hogFeatures =  get_hog_features(image[:,:], orient, 
-                                    pix_per_cell, cell_per_block,
-                                    vis=False, feature_vec=True)
-    return hogFeatures
-
-def appendHOGtoRoidb(roidb,size):
-    print("="*100)
-    print("appending the HOG field to Roidb")
-    # HACK: skip to save space + time
-    if size <= 1000: 
-        addRoidbField(roidb,"hog",bboxHOGfromRoidbSample)
-    addRoidbField(roidb,"hog_image",imageHOGfromRoidbSample)
-    print("finished appending HOG")
-
-def appendHOGtoRoidbDict(roidbDict,size):
-    for roidb in roidbDict.values():
-        appendHOGtoRoidb(roidb,size)
-
-def getSampleWeight(y_test):
-    weights = [0.0 for _ in cfg.DATASET_NAMES_ORDERED]
-    for idx,ds in enumerate(cfg.DATASET_NAMES_ORDERED):
-        weights[idx] = np.sum( y_test == idx )
-    return weights
-
-def make_confusion_matrix(model, X_test, y_test, clsToSet, normalize=True):
-
-    y_pred = model.predict(X_test)    
-    # Compute confusion matrix
-    cnf_matrix = confusion_matrix(y_test, y_pred)
-    print(cnf_matrix)
-    if normalize:
-        cnf_matrix = cnf_matrix.astype('float') / cnf_matrix.sum(axis=1)[:, np.newaxis]
-    np.set_printoptions(precision=2)
-    # we fixed the original ordering
-    #cnf_matrix = switch_rows_cols(cnf_matrix,clsToSet,cfg.DATASET_NAMES_ORDERED)
-    # todo Plot normalized confusion matrix  ----- NEED TO FIX CLASS NAMES DEPENDS ON PYROIDB
-    return cnf_matrix
-"""
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',

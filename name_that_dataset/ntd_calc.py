@@ -124,7 +124,7 @@ for i in range(len(re)):
     for j in range(len(re[0])):
         re[i][j] = re[i][j] / 8
 
-numpy.matrix.round(re, 2)
+#numpy.matrix.round(re, 2)
 
 for z in re: 
     print(z)

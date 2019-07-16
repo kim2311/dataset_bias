@@ -1,11 +1,6 @@
-|   | COCO | CALTECH | IMAGENET | PASCAL | CAM2 | INRIA | SUN | KITTI |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | 
-| COCO | 0.19 |   0.03 |  0.19 |  0.17 |  0.04 |  0.16 |  0.17 |  0.06 |
-| CALTECH | 0 |      0.98 |  0 |  0 |  0 |  0 |  0.01 |  0 |
-| IMAGENET | 0.17 |   0.03 |  0.31 |  0.17 |  0.04 |  0.12 |  0.11 |  0.06 |
-| PASCAL | 0.18 |   0.02 |  0.21 |  0.17 |  0.06 |  0.13 |  0.16 |  0.07 |
-| CAM2 | 0.01 |   0 |  0.01 |  0.01 |  0.93 |  0.01 |  0.01 |  0.01 |
-| INRIA | 0.13 |   0.03 |  0.11 |  0.16 |  0.03 |  0.34 |  0.12 |  0.09 |
-| SUN | 0.15 |   0.03 |  0.14 |  0.13 |  0.05 |  0.16 |  0.26 |  0.08 |
-| KITTI | 0 |  0 |   0 |  0.01 |  0.01 |  0.01 |  0.01 |  0.95 |
+These scripts will generate the confusion matrices for our implementation of the *Name That Dataset* experiment. Our results can be seen by running the respective `results*.py` scripts.
 
+To simulate the experiment with the datasets on the HELPS machine, run the respective `main` script:
+`python ntd_main.py`
+
+The `calc` and `results` scripts are for generating the averaged and normalized results over a series of iterations. The data must be input manually.

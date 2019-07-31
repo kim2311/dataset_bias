@@ -103,6 +103,7 @@ def pseudo_label(args, model, device, test_loader, pseudo_set, flag=0, cuda=True
 # with torch.no_grad():
 
     converged = False
+    count = 0
     while(not converged):
         for index, (data, target) in enumerate(test_loader):
             data, target = data.to(device), target.to(device)
@@ -122,14 +123,16 @@ def pseudo_label(args, model, device, test_loader, pseudo_set, flag=0, cuda=True
 
             data_correct = data[indices]
             labels_correct = target[indices[0]]
-
+            count = 0
             if flag==0:
                 flag=1
                 pseudo_set.train_data = data_correct
                 pseudo_set.train_labels = labels_correct
+                count  = len(labels_correct)
             else:
                 pseudo_set.train_data = torch.cat((pseudo_set.train_data, data_correct), 0)
                 pseudo_set.train_labels = torch.cat((pseudo_set.train_labels, labels_correct), 0)
+                count  = len(labels_correct)
 
             conf += torch.sum(pred_values) #sum up the total confidence          
             corr_conf += torch.sum(pred_values[corr == 1]) #sum up confidence for correct predictions           
@@ -149,7 +152,8 @@ def pseudo_label(args, model, device, test_loader, pseudo_set, flag=0, cuda=True
         model_original = tune(args, model_original, device, pseudo_loader, optimizer_, num_epochs)
 
         model.load_state_dict(model_original.state_dict())
-        converged=True
+        if (count == 0):
+            converged=True
 
     return model_original
 

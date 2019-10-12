@@ -141,7 +141,7 @@ def extract_features(imgs, feat_type, spatial_size=(32, 32),
     return features # Return list of feature vectors
 
 
-print('===== Starting Program  =====')
+print('====== Starting Program  ======')
 
 train_COCO = '/local/b/cam2/data/coco/images/train2014'
 train_ImageNet = '/local/b/cam2/data/ILSVRC2012_Classification/train/'
@@ -156,60 +156,42 @@ sun = glob.glob(train_Sun + '/**/*.jpg', recursive = True)
 model = ['hog']
 results = []
 
-i = 0
 for j in model:
     t3 = time.time()
     shuffle(coco)
     shuffle(imagenet)
     shuffle(pascal)
     shuffle(sun)
-
-    ''' 
-    print('len of coco', len(coco))
-    print('len of imagenet', len(imagenet))
-    print('len of pascal' ,len(pascal))
-    print('len of sun', len(sun))
-    '''
     
     # Specify size of training and testing sets
     dataset_size_train = 14400
     dataset_size_test = 1600
-    dataset_total = dataset_size_train+dataset_size_test
+    dataset_total = dataset_size_train + dataset_size_test
 
-    coco1 = coco[0:(dataset_size_train+dataset_size_test)]
-    imagenet1 = imagenet[0:(dataset_size_train+dataset_size_test)]
-    pascal1 = pascal[0:(dataset_size_train+dataset_size_test)]
-    sun1 = sun[0:(dataset_size_train+dataset_size_test)]
-
+    coco1 = coco[0:(dataset_size_train + dataset_size_test)]
+    imagenet1 = imagenet[0:(dataset_size_train + dataset_size_test)]
+    pascal1 = pascal[0:(dataset_size_train + dataset_size_test)]
+    sun1 = sun[0:(dataset_size_train + dataset_size_test)]
     
     print('Length of COCO\t\t ', len(coco1))
     print('Length of ImageNet\t ', len(imagenet1))
     print('Length of VOC\t\t ' , len(pascal1))
     print('Length of SUN\t\t ', len(sun1))
     
-
     orient = 8  # HOG orientations
     pix_per_cell = 8  # HOG pixels per cell
     cell_per_block = 2  # HOG cells per block
     hog_channel = 0  # Can be 0, 1, 2, or "ALL"
     spatial_size = (16, 16)  # Spatial binning dimensions
     hist_bins = 32  # Number of histogram bins
-
+    
     coco_feat = extract_features(coco1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
     imagenet_feat = extract_features(imagenet1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
     pascal_feat = extract_features(pascal1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
     sun_feat = extract_features(sun1, j,spatial_size=spatial_size, hist_bins=hist_bins, orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block, hog_channel=hog_channel)
 
-    '''
-    print('===== LENGTH AFTER CUT =====')
-    print('len of coco', len(coco1))
-    print('len of imagenet', len(imagenet1))
-    print('len of pascal' ,len(pascal1))
-    print('len of sun', len(sun1))
-    '''
-
     kfold = KFold(10, False, 1)
-
+    
     data0 = np.array(coco_feat)
     data1 = np.array(imagenet_feat)
     data2 = np.array(pascal_feat)
@@ -217,7 +199,7 @@ for j in model:
 
     for kfold0, kfold1, kfold2, kfold3, x in zip(kfold.split(data0), kfold.split(data1), kfold.split(data2), kfold.split(data3), range(10)):
 
-        print(f"== Iteration {x+1}")
+        print(f"== Iteration {x+1} ==")
 
         train0, test0 = kfold0
         train1, test1 = kfold1
@@ -250,32 +232,27 @@ for j in model:
         svc = LinearSVC(loss='hinge', multi_class = 'ovr')
         t=time.time()
 
-        print('Start training')
+        print('Starting training...')
         model_fit = svc.fit(X_train_scaled, y_train)
         t2 = time.time()
 
-        print(round(t2-t, 2), 'Seconds to train SVC...')
+        print(round(t2-t, 2), 'seconds to train SVC.')
         print('Test Accuracy of SVC = ', round(model_fit.score(X_test_scaled, y_test), 4))
 
         results.append(round(model_fit.score(X_test_scaled, y_test), 4))
 
-        # t4 = time.time()
-        # print(round(t4-t3, 2), 'Seconds to run')
+        # Plot confusion matrix
+        y_pred = model_fit.predict(X_test_scaled)
 
-        # Begin confusion matrix
-        if i == 0:
-            y_pred = model_fit.predict(X_test_scaled)
+        cnf_matrix = confusion_matrix(y_test, y_pred)
+        np.set_printoptions(precision=2)
 
-            # Compute confusion matrix
-            cnf_matrix = confusion_matrix(y_test, y_pred)
-            np.set_printoptions(precision=2)
+        class_names = ('COCO', 'ImageNet', 'Pascal', 'Sun')
+        plt.figure()
+        plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix')
 
-            # Plot normalized confusion matrix
-            class_names = ('COCO', 'ImageNet', 'Pascal', 'Sun')
-            plt.figure()
-            plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix')
-
-            plt.show()
+        plt.show()
 
 t4 = time.time()
-print(round(t4-t3, 2), 'Seconds to run')
+print(round(t4-t3, 2), 'seconds to run experiment.')
+print('Experiment finished.')

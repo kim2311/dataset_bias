@@ -172,8 +172,8 @@ for j in model:
     '''
     
     # Specify size of training and testing sets
-    dataset_size_train = 144
-    dataset_size_test = 16
+    dataset_size_train = 9
+    dataset_size_test = 1
     dataset_total = dataset_size_train+dataset_size_test
 
     coco1 = coco[0:(dataset_size_train+dataset_size_test)]
@@ -208,13 +208,33 @@ for j in model:
     print('len of sun', len(sun1))
     '''
 
-    for x in range(10):
+    for x in range(1):
 
-        data = coco_feat
+        data = np.array(coco_feat)
         kfold = KFold(10, False, 1)
 
+        print('data is %s' % data)
+        #print('data[0] is %s' % data[0])
+
         for train, test in kfold.split(data):
-            print('train: %s, test: %s' % (data[train], data[test]))
+            #print('train: %s' % data[train])
+            #print('test: %s' % data[test])
+            print(train)
+            print(test)
+
+        print(kfold.split(data))
+        #print(train)
+        #print(test)
+
+        data0 = np.array(sun_feat)
+
+        meme = [0, 1, 2, 3, 4, 5]
+
+        for train, test, train0, test0 in kfold.split(data), kfold.split(meme):
+            print(train)
+            print(train0)
+            print(test)
+            print(test0)
 
         coco_train = coco_feat[0:dataset_size_train]
         coco_test = coco_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]

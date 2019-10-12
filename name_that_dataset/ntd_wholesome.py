@@ -208,42 +208,26 @@ for j in model:
     print('len of sun', len(sun1))
     '''
 
-    for x in range(1):
+    data0 = np.array(coco_feat)
+    data1 = np.array(imagenet_feat)
+    data2 = np.array(pascal_feat)
+    data3 = np.array(sun_feat)
 
-        data = np.array(coco_feat)
-        kfold = KFold(10, False, 1)
+    for kfold0, kfold1, kfold2, kfold3 in zip(kfold.split(data0), kfold.split(data1), kfold.split(data2), kfold.split(data3)):
 
-        print('data is %s' % data)
-        #print('data[0] is %s' % data[0])
+        train0, test0 = kfold0
+        train1, test1 = kfold1
+        train2, test2 = kfold2
+        train3, test3 = kfold3
 
-        for train, test in kfold.split(data):
-            #print('train: %s' % data[train])
-            #print('test: %s' % data[test])
-            print(train)
-            print(test)
-
-        print(kfold.split(data))
-        #print(train)
-        #print(test)
-
-        data0 = np.array(sun_feat)
-
-        meme = [0, 1, 2, 3, 4, 5]
-
-        for train, test, train0, test0 in kfold.split(data), kfold.split(meme):
-            print(train)
-            print(train0)
-            print(test)
-            print(test0)
-
-        coco_train = coco_feat[0:dataset_size_train]
-        coco_test = coco_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
-        imagenet_train = imagenet_feat[0:dataset_size_train]
-        imagenet_test = imagenet_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
-        pascal_train = pascal_feat[0:dataset_size_train]
-        pascal_test = pascal_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
-        sun_train = sun_feat[0:dataset_size_train]
-        sun_test = sun_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+        coco_train = data0[train0]
+        coco_test = data0[test0]
+        imagenet_train = data1[train1]
+        imagenet_test = data1[test1]
+        pascal_train = data2[train2]
+        pascal_test = data2[test2]
+        sun_train = data3[train3]
+        sun_test = data3[test3]
 
         X_train_m = np.vstack((coco_train, imagenet_train, pascal_train, sun_train)).astype(np.float64)
         X_test_m = np.vstack((coco_test, imagenet_test, pascal_test, sun_test)).astype(np.float64)

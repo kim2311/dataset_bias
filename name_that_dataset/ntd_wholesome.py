@@ -14,6 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from skimage.feature import hog
 from sklearn.metrics import confusion_matrix
 import warnings
+from sklearn.model_selection import KFold
 warnings.filterwarnings('ignore')
 
 
@@ -171,8 +172,8 @@ for j in model:
     '''
     
     # Specify size of training and testing sets
-    dataset_size_train = 5
-    dataset_size_test = 1
+    dataset_size_train = 144
+    dataset_size_test = 16
     dataset_total = dataset_size_train+dataset_size_test
 
     coco1 = coco[0:(dataset_size_train+dataset_size_test)]
@@ -207,61 +208,63 @@ for j in model:
     print('len of sun', len(sun1))
     '''
 
-    coco_train = coco_feat[0:dataset_size_train]
-    coco_test = coco_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
-    imagenet_train = imagenet_feat[0:dataset_size_train]
-    imagenet_test = imagenet_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
-    pascal_train = pascal_feat[0:dataset_size_train]
-    pascal_test = pascal_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
-    sun_train = sun_feat[0:dataset_size_train]
-    sun_test = sun_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+    for x in range(10):
 
-    train = [x for x in coco_feat if x not in coco_test]
-    if coco_train == train:
-        print("Yes!")
-    else:
-        print("No!")
+        data = coco_feat
+        kfold = KFold(10, False, 1)
 
-    X_train_m = np.vstack((coco_train, imagenet_train, pascal_train, sun_train)).astype(np.float64)
-    X_test_m = np.vstack((coco_test, imagenet_test, pascal_test, sun_test)).astype(np.float64)
-    X_train_scaler = StandardScaler().fit(X_train_m)
-    X_test_scaler = StandardScaler().fit(X_test_m)
+        for train, test in kfold.split(data):
+            print('train: %s, test: %s' % (data[train], data[test]))
 
-    X_train_scaled = X_train_scaler.transform(X_train_m)
-    X_test_scaled = X_test_scaler.transform(X_test_m)
-    y_train = np.hstack((np.ones(len(coco_train)), np.full(len(imagenet_train), 2), np.full(len(pascal_train), 3), np.full(len(sun_train), 4)))
-    y_test = np.hstack((np.ones(len(coco_test)), np.full(len(imagenet_test), 2), np.full(len(pascal_test), 3), np.full(len(sun_test), 4)))
+        coco_train = coco_feat[0:dataset_size_train]
+        coco_test = coco_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+        imagenet_train = imagenet_feat[0:dataset_size_train]
+        imagenet_test = imagenet_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+        pascal_train = pascal_feat[0:dataset_size_train]
+        pascal_test = pascal_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
+        sun_train = sun_feat[0:dataset_size_train]
+        sun_test = sun_feat[dataset_size_train:(dataset_size_train+dataset_size_test)]
 
-    print('Using:',orient,'orientations', pix_per_cell, 'pixels per cell and', cell_per_block,'cells per block')
-    print('Feature vector length:', len(X_train_scaled[0]))
+        X_train_m = np.vstack((coco_train, imagenet_train, pascal_train, sun_train)).astype(np.float64)
+        X_test_m = np.vstack((coco_test, imagenet_test, pascal_test, sun_test)).astype(np.float64)
+        X_train_scaler = StandardScaler().fit(X_train_m)
+        X_test_scaler = StandardScaler().fit(X_test_m)
 
-    # Begin training
-    svc = LinearSVC(loss='hinge', multi_class = 'ovr')
-    t=time.time()
+        X_train_scaled = X_train_scaler.transform(X_train_m)
+        X_test_scaled = X_test_scaler.transform(X_test_m)
+        y_train = np.hstack((np.ones(len(coco_train)), np.full(len(imagenet_train), 2), np.full(len(pascal_train), 3), np.full(len(sun_train), 4)))
+        y_test = np.hstack((np.ones(len(coco_test)), np.full(len(imagenet_test), 2), np.full(len(pascal_test), 3), np.full(len(sun_test), 4)))
 
-    print('Start training')
-    model_fit = svc.fit(X_train_scaled, y_train)
-    t2 = time.time()
+        print('Using:',orient,'orientations', pix_per_cell, 'pixels per cell and', cell_per_block,'cells per block')
+        print('Feature vector length:', len(X_train_scaled[0]))
 
-    print(round(t2-t, 2), 'Seconds to train SVC...')
-    print('Test Accuracy of SVC = ', round(model_fit.score(X_test_scaled, y_test), 4))
+        # Begin training
+        svc = LinearSVC(loss='hinge', multi_class = 'ovr')
+        t=time.time()
 
-    results.append(round(model_fit.score(X_test_scaled, y_test), 4))
+        print('Start training')
+        model_fit = svc.fit(X_train_scaled, y_train)
+        t2 = time.time()
 
-    t4 = time.time()
-    print(round(t4-t3, 2), 'Seconds to run')
+        print(round(t2-t, 2), 'Seconds to train SVC...')
+        print('Test Accuracy of SVC = ', round(model_fit.score(X_test_scaled, y_test), 4))
 
-    # Begin confusion matrix
-    if i == 0:
-        y_pred = model_fit.predict(X_test_scaled)
+        results.append(round(model_fit.score(X_test_scaled, y_test), 4))
 
-        # Compute confusion matrix
-        cnf_matrix = confusion_matrix(y_test, y_pred)
-        np.set_printoptions(precision=2)
+        t4 = time.time()
+        print(round(t4-t3, 2), 'Seconds to run')
 
-        # Plot normalized confusion matrix
-        class_names = ('COCO', 'ImageNet', 'Pascal', 'Sun')
-        plt.figure()
-        plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix')
+        # Begin confusion matrix
+        if i == 0:
+            y_pred = model_fit.predict(X_test_scaled)
 
-        plt.show()
+            # Compute confusion matrix
+            cnf_matrix = confusion_matrix(y_test, y_pred)
+            np.set_printoptions(precision=2)
+
+            # Plot normalized confusion matrix
+            class_names = ('COCO', 'ImageNet', 'Pascal', 'Sun')
+            plt.figure()
+            plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix')
+
+            plt.show()

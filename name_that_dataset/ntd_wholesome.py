@@ -141,7 +141,7 @@ def extract_features(imgs, feat_type, spatial_size=(32, 32),
     return features # Return list of feature vectors
 
 
-print('===== STARTING =====')
+print('===== Starting Program  =====')
 
 train_COCO = '/local/b/cam2/data/coco/images/train2014'
 train_ImageNet = '/local/b/cam2/data/ILSVRC2012_Classification/train/'
@@ -172,8 +172,8 @@ for j in model:
     '''
     
     # Specify size of training and testing sets
-    dataset_size_train = 9
-    dataset_size_test = 1
+    dataset_size_train = 14400
+    dataset_size_test = 1600
     dataset_total = dataset_size_train+dataset_size_test
 
     coco1 = coco[0:(dataset_size_train+dataset_size_test)]
@@ -181,12 +181,12 @@ for j in model:
     pascal1 = pascal[0:(dataset_size_train+dataset_size_test)]
     sun1 = sun[0:(dataset_size_train+dataset_size_test)]
 
-    '''
-    print('len of coco', len(coco1))
-    print('len of imagenet', len(imagenet1))
-    print('len of pascal' ,len(pascal1))
-    print('len of sun', len(sun1))
-    '''
+    
+    print('Length of COCO\t\t ', len(coco1))
+    print('Length of ImageNet\t ', len(imagenet1))
+    print('Length of VOC\t\t ' , len(pascal1))
+    print('Length of SUN\t\t ', len(sun1))
+    
 
     orient = 8  # HOG orientations
     pix_per_cell = 8  # HOG pixels per cell
@@ -208,12 +208,16 @@ for j in model:
     print('len of sun', len(sun1))
     '''
 
+    kfold = KFold(10, False, 1)
+
     data0 = np.array(coco_feat)
     data1 = np.array(imagenet_feat)
     data2 = np.array(pascal_feat)
     data3 = np.array(sun_feat)
 
-    for kfold0, kfold1, kfold2, kfold3 in zip(kfold.split(data0), kfold.split(data1), kfold.split(data2), kfold.split(data3)):
+    for kfold0, kfold1, kfold2, kfold3, x in zip(kfold.split(data0), kfold.split(data1), kfold.split(data2), kfold.split(data3), range(10)):
+
+        print(f"== Iteration {x+1}")
 
         train0, test0 = kfold0
         train1, test1 = kfold1
@@ -239,8 +243,8 @@ for j in model:
         y_train = np.hstack((np.ones(len(coco_train)), np.full(len(imagenet_train), 2), np.full(len(pascal_train), 3), np.full(len(sun_train), 4)))
         y_test = np.hstack((np.ones(len(coco_test)), np.full(len(imagenet_test), 2), np.full(len(pascal_test), 3), np.full(len(sun_test), 4)))
 
-        print('Using:',orient,'orientations', pix_per_cell, 'pixels per cell and', cell_per_block,'cells per block')
-        print('Feature vector length:', len(X_train_scaled[0]))
+        # print('Using:',orient,'orientations', pix_per_cell, 'pixels per cell and', cell_per_block,'cells per block')
+        # print('Feature vector length:', len(X_train_scaled[0]))
 
         # Begin training
         svc = LinearSVC(loss='hinge', multi_class = 'ovr')
@@ -255,8 +259,8 @@ for j in model:
 
         results.append(round(model_fit.score(X_test_scaled, y_test), 4))
 
-        t4 = time.time()
-        print(round(t4-t3, 2), 'Seconds to run')
+        # t4 = time.time()
+        # print(round(t4-t3, 2), 'Seconds to run')
 
         # Begin confusion matrix
         if i == 0:
@@ -272,3 +276,6 @@ for j in model:
             plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix')
 
             plt.show()
+
+t4 = time.time()
+print(round(t4-t3, 2), 'Seconds to run')

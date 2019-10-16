@@ -141,7 +141,7 @@ def extract_features(imgs, feat_type, spatial_size=(32, 32),
     return features # Return list of feature vectors
 
 
-print('====== Starting Program  ======')
+print('===== Starting Program  =====')
 
 train_COCO = '/local/b/cam2/data/coco/images/train2014'
 train_ImageNet = '/local/b/cam2/data/ILSVRC2012_Classification/train/'
@@ -164,8 +164,8 @@ for j in model:
     shuffle(sun)
     
     # Specify size of training and testing sets
-    dataset_size_train = 14400
-    dataset_size_test = 1600
+    dataset_size_train = 144
+    dataset_size_test = 16
     dataset_total = dataset_size_train + dataset_size_test
 
     coco1 = coco[0:(dataset_size_train + dataset_size_test)]
@@ -196,6 +196,12 @@ for j in model:
     data1 = np.array(imagenet_feat)
     data2 = np.array(pascal_feat)
     data3 = np.array(sun_feat)
+
+    # Define wholesome datasets
+    coco_wholesome = set()
+    imagenet_wholesome = set()
+    voc_pred = set()
+    sun_pred = set()
 
     for kfold0, kfold1, kfold2, kfold3, x in zip(kfold.split(data0), kfold.split(data1), kfold.split(data2), kfold.split(data3), range(10)):
 
@@ -243,6 +249,7 @@ for j in model:
 
         # Plot confusion matrix
         y_pred = model_fit.predict(X_test_scaled)
+        print(f"y_pred = {y_pred}")
 
         cnf_matrix = confusion_matrix(y_test, y_pred)
         np.set_printoptions(precision=2)
@@ -252,6 +259,25 @@ for j in model:
         plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix')
 
         plt.show()
+        
+        # Add samples to wholesome datasets
+        coco_pred = y_pred[0:dataset_size_test]
+        imagenet_pred = y_pred[dataset_size_test:(2*dataset_size_test)]
+        voc_pred = y_pred[(2*dataset_size_test):(3*dataset_size_test)]
+        sun_pred = y_pred[(3*dataset_size_test):(4*dataset_size_test)]
+        #print(coco_pred)
+        #print(imagenet_pred)
+        #print(voc_pred)
+        #print(sun_pred)
+        for sample in coco_pred:
+            if sample == 2:
+                imagenet_wholesome.add(sample)
+            elif sample == 3:
+                voc_wholesome.add(sample)
+            elif sample == 4:
+                sun_wholesome.add(sample)
+
+
 
 t4 = time.time()
 print(round(t4-t3, 2), 'seconds to run experiment.')

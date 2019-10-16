@@ -15,7 +15,7 @@ from skimage.feature import hog
 from sklearn.metrics import confusion_matrix
 import warnings
 from sklearn.model_selection import KFold
-import pprint as pp
+from pprint import pprint as pp
 warnings.filterwarnings('ignore')
 
 

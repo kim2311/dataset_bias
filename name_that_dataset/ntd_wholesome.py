@@ -165,8 +165,8 @@ for j in model:
     shuffle(sun)
     
     # Specify size of training and testing sets
-    dataset_size_train = 144
-    dataset_size_test = 16
+    dataset_size_train = 7200
+    dataset_size_test = 800
     dataset_total = dataset_size_train + dataset_size_test
 
     coco1 = coco[0:(dataset_size_train + dataset_size_test)]
@@ -337,19 +337,20 @@ for j in model:
                     if np.array_equal(value, sun_test[ind]):
                         voc_wholesome.add(key)
 
-    with open('coco_wholesome.csv','wb') as file:
+    with open('coco_wholesome.txt','w') as file:
         for item in coco_wholesome:
+            #print(item)
             file.write("%s\n" % item)
 
-    with open('imagenet_wholesome.csv','wb') as file:
+    with open('imagenet_wholesome.txt','w') as file:
         for item in imagenet_wholesome:
             file.write("%s\n" % item)
 
-    with open('voc_wholesome.csv','wb') as file:
+    with open('voc_wholesome.txt','w') as file:
         for item in voc_wholesome:
             file.write("%s\n" % item)
 
-    with open('sun_wholesome.csv','wb') as file:
+    with open('sun_wholesome.txt','w') as file:
         for item in sun_wholesome:
             file.write("%s\n" % item)
 

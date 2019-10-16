@@ -15,6 +15,7 @@ from skimage.feature import hog
 from sklearn.metrics import confusion_matrix
 import warnings
 from sklearn.model_selection import KFold
+import pprint as pp
 warnings.filterwarnings('ignore')
 
 
@@ -200,8 +201,8 @@ for j in model:
     # Define wholesome datasets
     coco_wholesome = set()
     imagenet_wholesome = set()
-    voc_pred = set()
-    sun_pred = set()
+    voc_wholesome = set()
+    sun_wholesome = set()
 
     for kfold0, kfold1, kfold2, kfold3, x in zip(kfold.split(data0), kfold.split(data1), kfold.split(data2), kfold.split(data3), range(10)):
 
@@ -265,10 +266,7 @@ for j in model:
         imagenet_pred = y_pred[dataset_size_test:(2*dataset_size_test)]
         voc_pred = y_pred[(2*dataset_size_test):(3*dataset_size_test)]
         sun_pred = y_pred[(3*dataset_size_test):(4*dataset_size_test)]
-        #print(coco_pred)
-        #print(imagenet_pred)
-        #print(voc_pred)
-        #print(sun_pred)
+
         for sample in coco_pred:
             if sample == 2:
                 imagenet_wholesome.add(sample)
@@ -277,7 +275,31 @@ for j in model:
             elif sample == 4:
                 sun_wholesome.add(sample)
 
+        for sample in imagenet_pred:
+            if sample == 1:
+                coco_wholesome.add(sample)
+            elif sample == 3:
+                voc_wholesome.add(sample)
+            elif sample == 4:
+                sun_wholesome.add(sample)
 
+        for sample in voc_pred:
+            if sample == 1:
+                coco_wholesome.add(sample)
+            elif sample == 2:
+                imagenet_wholesome.add(sample)
+            elif sample == 4:
+                sun_wholesome.add(sample)
+
+        for sample in sun_pred:
+            if sample == 1:
+                coco_wholesome.add(sample)
+            elif sample == 2:
+                imagenet_wholesome.add(sample)
+            elif sample == 3:
+                voc_wholesome.add(sample)
+
+    pp(coco_wholesome)
 
 t4 = time.time()
 print(round(t4-t3, 2), 'seconds to run experiment.')

@@ -175,7 +175,7 @@ for j in model:
     sun1 = sun[0:(dataset_size_train + dataset_size_test)]
     
     sample_list = coco1 + imagenet1 + pascal1 + sun1
-    pp(sample_list)
+    #pp(sample_list)
 
     print('Length of COCO\t\t ', len(coco1))
     print('Length of ImageNet\t ', len(imagenet1))
@@ -206,11 +206,16 @@ for j in model:
     #feature_list = np.concatenate(feature_list, data3)
     feature_list = coco_feat + imagenet_feat + pascal_feat + sun_feat
 
-    print(len(feature_list))
-    pp(feature_list)
+    #print(len(feature_list))
+    #pp(feature_list)
+    #print(type(feature_list))
+    #features = tuple(feature_list.tolist())
 
+    #dictionary = {}
+    #for ind, elem in enumerate(feature_list, 0):
+    #dictionary[repr(elem)] = sample_list[ind]
     dictionary = dict(zip(sample_list, feature_list))
-    pp(dictionary)
+    #pp(dictionary)
 
     # Define wholesome datasets
     coco_wholesome = set()
@@ -290,7 +295,12 @@ for j in model:
         for sample in coco_pred:
             ind += 1
             if sample == 2:
-                imagenet_wholesome.add(dictionary[coco_test[ind]])
+                for key, value in dictionary.items():
+                    pp(key)
+                    pp(value)
+                    pp(coco_test[ind])
+                    if np.array_equal(value, coco_test[ind]):
+                        imagenet_wholesome.add(key)
             elif sample == 3:
                 voc_wholesome.add(sample)
             elif sample == 4:

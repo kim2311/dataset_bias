@@ -174,6 +174,9 @@ for j in model:
     pascal1 = pascal[0:(dataset_size_train + dataset_size_test)]
     sun1 = sun[0:(dataset_size_train + dataset_size_test)]
     
+    sample_list = coco1 + imagenet1 + pascal1 + sun1
+    pp(sample_list)
+
     print('Length of COCO\t\t ', len(coco1))
     print('Length of ImageNet\t ', len(imagenet1))
     print('Length of VOC\t\t ' , len(pascal1))
@@ -198,8 +201,16 @@ for j in model:
     data2 = np.array(pascal_feat)
     data3 = np.array(sun_feat)
 
-    for item in data0:
-        pp(item)
+    #feature_list = 
+    #feature_list = np.concatenate(feature_list, data2)
+    #feature_list = np.concatenate(feature_list, data3)
+    feature_list = coco_feat + imagenet_feat + pascal_feat + sun_feat
+
+    print(len(feature_list))
+    pp(feature_list)
+
+    dictionary = dict(zip(sample_list, feature_list))
+    pp(dictionary)
 
     # Define wholesome datasets
     coco_wholesome = set()
@@ -274,8 +285,10 @@ for j in model:
 
         # for sample in range(dataset_size_test):
 
+        ind = -1
 
         for sample in coco_pred:
+            ind += 1
             if sample == 2:
                 imagenet_wholesome.add(sample)
             elif sample == 3:
@@ -284,6 +297,7 @@ for j in model:
                 sun_wholesome.add(sample)
 
         for sample in imagenet_pred:
+            ind += 1
             if sample == 1:
                 coco_wholesome.add(sample)
             elif sample == 3:
@@ -292,6 +306,7 @@ for j in model:
                 sun_wholesome.add(sample)
 
         for sample in voc_pred:
+            ind += 1
             if sample == 1:
                 coco_wholesome.add(sample)
             elif sample == 2:
@@ -300,6 +315,7 @@ for j in model:
                 sun_wholesome.add(sample)
 
         for sample in sun_pred:
+            ind += 1
             if sample == 1:
                 coco_wholesome.add(sample)
             elif sample == 2:

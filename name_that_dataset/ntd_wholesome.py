@@ -165,8 +165,8 @@ for j in model:
     shuffle(sun)
     
     # Specify size of training and testing sets
-    dataset_size_train = 7200
-    dataset_size_test = 800
+    dataset_size_train = 90
+    dataset_size_test = 10
     dataset_total = dataset_size_train + dataset_size_test
 
     coco1 = coco[0:(dataset_size_train + dataset_size_test)]

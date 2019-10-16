@@ -272,7 +272,7 @@ for j in model:
 
         samples = set()
 
-        for sample in range(dataset_size_test):
+        # for sample in range(dataset_size_test):
 
 
         for sample in coco_pred:

@@ -15,7 +15,7 @@ from skimage.feature import hog
 from sklearn.metrics import confusion_matrix
 import warnings
 from sklearn.model_selection import KFold
-import pprint as pp
+from pprint import pprint as pp
 warnings.filterwarnings('ignore')
 
 
@@ -198,6 +198,9 @@ for j in model:
     data2 = np.array(pascal_feat)
     data3 = np.array(sun_feat)
 
+    for item in data0:
+        pp(item)
+
     # Define wholesome datasets
     coco_wholesome = set()
     imagenet_wholesome = set()
@@ -250,7 +253,7 @@ for j in model:
 
         # Plot confusion matrix
         y_pred = model_fit.predict(X_test_scaled)
-        print(f"y_pred = {y_pred}")
+        # print(f"y_pred = {y_pred}")
 
         cnf_matrix = confusion_matrix(y_test, y_pred)
         np.set_printoptions(precision=2)
@@ -266,6 +269,11 @@ for j in model:
         imagenet_pred = y_pred[dataset_size_test:(2*dataset_size_test)]
         voc_pred = y_pred[(2*dataset_size_test):(3*dataset_size_test)]
         sun_pred = y_pred[(3*dataset_size_test):(4*dataset_size_test)]
+
+        samples = set()
+
+        for sample in range(dataset_size_test):
+
 
         for sample in coco_pred:
             if sample == 2:

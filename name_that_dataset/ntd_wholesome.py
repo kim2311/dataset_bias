@@ -290,7 +290,7 @@ for j in model:
         for sample in coco_pred:
             ind += 1
             if sample == 2:
-                imagenet_wholesome.add(sample)
+                imagenet_wholesome.add(dictionary[coco_test[ind]])
             elif sample == 3:
                 voc_wholesome.add(sample)
             elif sample == 4:
@@ -323,7 +323,7 @@ for j in model:
             elif sample == 3:
                 voc_wholesome.add(sample)
 
-    pp(coco_wholesome)
+    pp(imagenet_wholesome)
 
 t4 = time.time()
 print(round(t4-t3, 2), 'seconds to run experiment.')

@@ -201,21 +201,8 @@ for j in model:
     data2 = np.array(pascal_feat)
     data3 = np.array(sun_feat)
 
-    #feature_list = 
-    #feature_list = np.concatenate(feature_list, data2)
-    #feature_list = np.concatenate(feature_list, data3)
     feature_list = coco_feat + imagenet_feat + pascal_feat + sun_feat
-
-    #print(len(feature_list))
-    #pp(feature_list)
-    #print(type(feature_list))
-    #features = tuple(feature_list.tolist())
-
-    #dictionary = {}
-    #for ind, elem in enumerate(feature_list, 0):
-    #dictionary[repr(elem)] = sample_list[ind]
     dictionary = dict(zip(sample_list, feature_list))
-    #pp(dictionary)
 
     # Define wholesome datasets
     coco_wholesome = set()
@@ -279,61 +266,78 @@ for j in model:
         plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix')
 
         plt.show()
-        
+
         # Add samples to wholesome datasets
         coco_pred = y_pred[0:dataset_size_test]
         imagenet_pred = y_pred[dataset_size_test:(2*dataset_size_test)]
         voc_pred = y_pred[(2*dataset_size_test):(3*dataset_size_test)]
         sun_pred = y_pred[(3*dataset_size_test):(4*dataset_size_test)]
 
-        samples = set()
-
-        # for sample in range(dataset_size_test):
-
         ind = -1
-
         for sample in coco_pred:
             ind += 1
             if sample == 2:
                 for key, value in dictionary.items():
-                    pp(key)
-                    pp(value)
-                    pp(coco_test[ind])
                     if np.array_equal(value, coco_test[ind]):
                         imagenet_wholesome.add(key)
             elif sample == 3:
-                voc_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        voc_wholesome.add(key)
             elif sample == 4:
-                sun_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        sun_wholesome.add(key)
 
         for sample in imagenet_pred:
             ind += 1
             if sample == 1:
-                coco_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        coco_wholesome.add(key)
             elif sample == 3:
-                voc_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        voc_wholesome.add(key)
             elif sample == 4:
-                sun_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        sun_wholesome.add(key)
 
         for sample in voc_pred:
             ind += 1
             if sample == 1:
-                coco_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        coco_wholesome.add(key)
             elif sample == 2:
-                imagenet_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        imagenet_wholesome.add(key)
             elif sample == 4:
-                sun_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        sun_wholesome.add(key)
 
         for sample in sun_pred:
             ind += 1
             if sample == 1:
-                coco_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        coco_wholesome.add(key)
             elif sample == 2:
-                imagenet_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        imagenet_wholesome.add(key)
             elif sample == 3:
-                voc_wholesome.add(sample)
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        voc_wholesome.add(key)
 
-    pp(imagenet_wholesome)
+    with open('coco_wholesome.csv','wb') as file:
+        for item in coco_wholesome:
+            file.write("%s\n" % item)
+
 
 t4 = time.time()
 print(round(t4-t3, 2), 'seconds to run experiment.')

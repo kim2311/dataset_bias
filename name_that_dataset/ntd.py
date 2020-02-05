@@ -207,7 +207,9 @@ for j in model:
     print('len of coco', len(coco))
     print('len of caltech_test', len(caltech_test))
     print('len of caltech_train', len(caltech_train))
+    '''
     print('len of imagenet', len(imagenet))
+    '''
     print('len of pascal' ,len(pascal))
     print('len of cam2', len(cam2))
     print('len of inria', len(inria))

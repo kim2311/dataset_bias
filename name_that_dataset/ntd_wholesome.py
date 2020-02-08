@@ -210,6 +210,11 @@ for j in model:
     voc_wholesome = set()
     sun_wholesome = set()
 
+    coco_self = set()
+    imagenet_self = set()
+    voc_self = set()
+    sun_self = set()
+
     for kfold0, kfold1, kfold2, kfold3, x in zip(kfold.split(data0), kfold.split(data1), kfold.split(data2), kfold.split(data3), range(10)):
 
         print(f"== Iteration {x+1} ==")
@@ -276,7 +281,11 @@ for j in model:
         ind = -1
         for sample in coco_pred:
             ind += 1
-            if sample == 2:
+            if sample == 1:
+                for key, value in dictionary.items():
+                    if np.array_equal(value, coco_test[ind]):
+                        coco_self.add(key)
+            elif sample == 2:
                 for key, value in dictionary.items():
                     if np.array_equal(value, coco_test[ind]):
                         imagenet_wholesome.add(key)
@@ -296,6 +305,10 @@ for j in model:
                 for key, value in dictionary.items():
                     if np.array_equal(value, imagenet_test[ind]):
                         coco_wholesome.add(key)
+            elif sample == 2:
+                for key, value in dictionary.items():
+                    if np.array_equal(value, imagenet_test[ind]):
+                        imagenet_self.add(key)
             elif sample == 3:
                 for key, value in dictionary.items():
                     if np.array_equal(value, imagenet_test[ind]):
@@ -316,6 +329,10 @@ for j in model:
                 for key, value in dictionary.items():
                     if np.array_equal(value, pascal_test[ind]):
                         imagenet_wholesome.add(key)
+            elif sample == 3:
+                for key, value in dictionary.items():
+                    if np.array_equal(value, pascal_test[ind]):
+                        voc_self.add(key)
             elif sample == 4:
                 for key, value in dictionary.items():
                     if np.array_equal(value, pascal_test[ind]):
@@ -336,6 +353,10 @@ for j in model:
                 for key, value in dictionary.items():
                     if np.array_equal(value, sun_test[ind]):
                         voc_wholesome.add(key)
+            elif sample == 4:
+                for key, value in dictionary.items():
+                    if np.array_equal(value, sun_test[ind]):
+                        voc_self.add(key)
 
     with open('coco_wholesome.txt','w') as file:
         for item in coco_wholesome:
@@ -352,6 +373,23 @@ for j in model:
 
     with open('sun_wholesome.txt','w') as file:
         for item in sun_wholesome:
+            file.write("%s\n" % item)
+
+    with open('coco_self.txt','w') as file:
+        for item in coco_self:
+            #print(item)
+            file.write("%s\n" % item)
+
+    with open('imagenet_self.txt','w') as file:
+        for item in imagenet_self:
+            file.write("%s\n" % item)
+
+    with open('voc_self.txt','w') as file:
+        for item in voc_self:
+            file.write("%s\n" % item)
+
+    with open('sun_self.txt','w') as file:
+        for item in sun_self:
             file.write("%s\n" % item)
 
 t4 = time.time()
